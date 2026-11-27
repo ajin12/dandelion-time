@@ -166,7 +166,7 @@ export function drawDandelions(ctx, layout, time, t) {
     const pulse = 0.6 + 0.4 * (seconds % 1);
     const alpha =
       state === 'current' ? pulse : state === 'past' ? CONFIG.alpha.past : CONFIG.alpha.future;
-    const solid = `rgba(255,255,255,${alpha})`;
+    const solid = `rgba(${CONFIG.stemColor.join(',')},${alpha})`;
 
     // Stem: a gentle curve from the ground up to the edge of the core. It stops
     // at the core's edge (with a flat cap) so the two never overlap, which

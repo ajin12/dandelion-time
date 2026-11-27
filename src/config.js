@@ -13,10 +13,14 @@ export const CONFIG = {
   featherMax: 8,
   featherGap: Math.PI / 20, // angle between neighbouring feathers in the fan
 
+  // Stem and core colour: a light greyish blue rather than plain white, so
+  // dimmed stems read as soft blue instead of grey against the sky.
+  stemColor: [205, 222, 244],
+
   // Brightness of dandelions relative to the current hour.
   alpha: {
     past: 0.95, // bare stems for hours already gone
-    future: 0.42, // stems / heads of hours still to come
+    future: 0.62, // stems / heads of hours still to come
     futureSeeds: 0.8,
   },
 
