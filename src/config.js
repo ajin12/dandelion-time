@@ -16,7 +16,7 @@ export const CONFIG = {
   // Brightness of dandelions relative to the current hour.
   alpha: {
     past: 0.95, // bare stems for hours already gone
-    future: 0.42, // stems / heads of hours still to come
+    future: 0.28, // stems / heads of hours still to come
     futureSeeds: 0.8,
   },
 
