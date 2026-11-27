@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f122b" />
+    <meta name="description" content="Dandelion Time: an abstract clock where hours are dandelion stems, minutes are seeds, and seconds are fluff on the wind." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Dandelion Time</title>
+  </head>
+  <body>
+    <main id="stage" aria-label="Dandelion clock" role="img" aria-describedby="spoken-time"></main>
+
+    <header class="overlay brand">
+      <h1>dandelion time</h1>
+      <button id="legend-toggle" class="chip" aria-expanded="false" aria-controls="legend">how to read</button>
+    </header>
+
+    <section id="legend" class="overlay legend" hidden>
+      <ul>
+        <li><strong>hours</strong> are the bare stems. The glowing dandelion is the current hour.</li>
+        <li><strong>minutes</strong> are the seeds gone from it, sweeping clockwise from the top.</li>
+        <li><strong>seconds</strong> are the fluff drifting across the sky. It clears as each minute turns.</li>
+        <li>The <strong>sky</strong> follows the real sun where you are, from dawn to dusk to night.</li>
+      </ul>
+    </section>
+
+    <footer class="overlay sun">
+      <span>sunrise <time id="sunrise">—</time></span>
+      <span>sunset <time id="sunset">—</time></span>
+      <span id="location-note" class="note"></span>
+      <button id="use-location" class="chip" hidden>use my location</button>
+    </footer>
+
+    <p id="spoken-time" class="sr-only" aria-live="polite"></p>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
