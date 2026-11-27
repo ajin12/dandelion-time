@@ -160,43 +160,48 @@ export function drawDandelions(ctx, layout, time, t) {
     const state = i < hours ? 'past' : i === hours ? 'current' : 'future';
     const { x, y } = headPosition(layout, head, t);
 
-    // A heartbeat on each second for the current hour: bright on the tick,
-    // easing back down.
-    const tick = 1 - (seconds % 1);
-    const pulse = 0.6 + 0.4 * tick ** 3;
+    // The current hour pulses once a second, as in the original sketch:
+    // brightening through each second, then dropping back on the tick.
+    // Stem and core share one opacity so the dandelion reads as one shape.
+    const pulse = 0.6 + 0.4 * (seconds % 1);
     const alpha =
       state === 'current' ? pulse : state === 'past' ? CONFIG.alpha.past : CONFIG.alpha.future;
+    const solid = `rgba(255,255,255,${alpha})`;
 
-    // Stem: a gentle curve from the ground up to the head.
+    // Stem: a gentle curve from the ground up to the edge of the core. It stops
+    // at the core's edge (with a flat cap) so the two never overlap, which
+    // would otherwise show as a brighter line through a translucent core.
+    const cx = x + head.bow;
+    const cy = (y + height) / 2;
+    const dLen = Math.hypot(cx - x, cy - y) || 1;
+    const ex = x + ((cx - x) / dLen) * headR * 0.97;
+    const ey = y + ((cy - y) / dLen) * headR * 0.97;
     ctx.lineWidth = stroke * 1.6;
-    ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.9})`;
+    ctx.lineCap = 'butt';
+    ctx.strokeStyle = solid;
     ctx.beginPath();
     ctx.moveTo(head.x + head.bow * 0.25, height + 2);
-    ctx.quadraticCurveTo(x + head.bow, (y + height) / 2, x, y);
+    ctx.quadraticCurveTo(cx, cy, ex, ey);
     ctx.stroke();
+    ctx.lineCap = 'round';
 
-    // Seeds still attached.
+    // Seeds still attached. Stalks start at the core's edge for the same reason.
     const firstSeed = state === 'past' ? CONFIG.seedsPerHead : state === 'current' ? minutes : 0;
     if (firstSeed < CONFIG.seedsPerHead) {
       const stalks = new Path2D();
       const feathers = new Path2D();
       for (let k = firstSeed; k < CONFIG.seedsPerHead; k++) {
-        addSeed(stalks, feathers, x, y, seedAngle(i, k), headR * 0.8, seedLength(layout, i, k), layout.featherLen);
+        addSeed(stalks, feathers, x, y, seedAngle(i, k), headR + stroke * 0.4, seedLength(layout, i, k), layout.featherLen);
       }
-      const seedAlpha = state === 'current' ? 0.9 + 0.1 * pulse : CONFIG.alpha.futureSeeds;
+      const seedAlpha = state === 'current' ? 1 : CONFIG.alpha.futureSeeds;
       strokePaths(ctx, stalks, feathers, seedAlpha, stroke);
     }
 
-    // Head, with a soft glow on the current hour.
-    if (state === 'current') {
-      ctx.shadowColor = 'rgba(255,255,255,0.9)';
-      ctx.shadowBlur = headR * 2.5 * pulse;
-    }
-    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    // Core.
+    ctx.fillStyle = solid;
     ctx.beginPath();
     ctx.arc(x, y, headR, 0, TAU);
     ctx.fill();
-    ctx.shadowBlur = 0;
   }
 }
 
