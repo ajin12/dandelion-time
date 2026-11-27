@@ -6,8 +6,12 @@ export const CONFIG = {
   seedsPerHead: 60, // one seed per minute
 
   // Seeds: each seed is a thin stalk ending in a fan of feathers (the pappus).
-  featherCount: 4, // feathers per seed (replaces the old slider)
-  featherSpread: Math.PI / 6, // total fan angle of the feathers
+  // Feathers per seed. The viewer can change this with the slider in the
+  // corner (or ?feathers=N); the choice is remembered in localStorage.
+  featherCount: 4,
+  featherMin: 1,
+  featherMax: 8,
+  featherGap: Math.PI / 20, // angle between neighbouring feathers in the fan
 
   // Brightness of dandelions relative to the current hour.
   alpha: {

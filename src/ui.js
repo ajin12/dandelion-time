@@ -16,6 +16,37 @@ export function initUi({ getLocation, onRequestLocation }) {
   const locNote = document.getElementById('location-note');
   const spoken = document.getElementById('spoken-time');
 
+  // Fluff slider: feathers per seed.
+  const FEATHERS_KEY = 'dandelion-time:feathers';
+  const slider = document.getElementById('feathers');
+  const sliderValue = document.getElementById('feathers-value');
+  slider.min = String(CONFIG.featherMin);
+  slider.max = String(CONFIG.featherMax);
+  const setFeathers = (n, save) => {
+    const v = Math.round(Math.min(CONFIG.featherMax, Math.max(CONFIG.featherMin, Number(n))));
+    if (!Number.isFinite(v)) return;
+    CONFIG.featherCount = v;
+    slider.value = String(v);
+    sliderValue.textContent = String(v);
+    slider.setAttribute('aria-valuetext', `${v} feather${v === 1 ? '' : 's'} per seed`);
+    if (save) {
+      try {
+        localStorage.setItem(FEATHERS_KEY, String(v));
+      } catch {
+        /* ignore */
+      }
+    }
+  };
+  let initialFeathers = CONFIG.featherCount;
+  try {
+    initialFeathers = localStorage.getItem(FEATHERS_KEY) ?? initialFeathers;
+  } catch {
+    /* ignore */
+  }
+  initialFeathers = new URLSearchParams(window.location.search).get('feathers') ?? initialFeathers;
+  setFeathers(initialFeathers, false);
+  slider.addEventListener('input', () => setFeathers(slider.value, true));
+
   // Idle fade.
   let idleTimer;
   const wake = () => {

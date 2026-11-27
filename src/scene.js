@@ -79,7 +79,7 @@ function addSeed(stalks, feathers, cx, cy, angle, r0, r1, featherLen) {
   stalks.lineTo(tx, ty);
 
   const count = CONFIG.featherCount;
-  const spread = CONFIG.featherSpread;
+  const spread = CONFIG.featherGap * (count - 1);
   for (let f = 0; f < count; f++) {
     const a = angle + (count === 1 ? 0 : -spread / 2 + (spread * f) / (count - 1));
     feathers.moveTo(tx, ty);

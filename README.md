@@ -30,6 +30,7 @@ GitHub Pages, Cloudflare Pages, S3…).
 | --- | --- | --- |
 | `at` | `?at=06:45` or `?at=2026-06-21T20:30` | Start the clock at a given time |
 | `speed` | `?speed=60` | Run the clock faster (60 = a minute per second) |
+| `feathers` | `?feathers=1` | Feathers per seed, 1–8 (also set with the **fluff** slider) |
 | `lat`, `lon` | `?lat=51.5&lon=-0.13` | Use a fixed location for the sky |
 
 e.g. watch a sunset in fast forward: `/?at=16:00&speed=120&lat=40.7&lon=-74`

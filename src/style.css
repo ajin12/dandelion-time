@@ -84,6 +84,51 @@ h1 {
   cursor: progress;
 }
 
+.fluff-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+}
+.fluff-control output {
+  min-width: 1ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.fluff-control input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 84px;
+  height: 2px;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.fluff-control input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
+}
+.fluff-control input::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
+}
+.fluff-control input:focus {
+  outline: none;
+}
+.fluff-control:focus-within {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .legend {
   top: calc(max(18px, env(safe-area-inset-top)) + 42px);
   left: max(20px, env(safe-area-inset-left));
@@ -139,6 +184,14 @@ h1 {
 }
 
 @media (max-width: 520px) {
+  .brand {
+    flex-wrap: wrap;
+    right: 20px;
+    gap: 10px;
+  }
+  .fluff-control input {
+    width: 64px;
+  }
   h1 {
     font-size: 13px;
     letter-spacing: 0.24em;
