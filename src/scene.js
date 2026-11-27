@@ -163,7 +163,7 @@ export function drawDandelions(ctx, layout, time, t) {
     // The current hour pulses once a second, as in the original sketch:
     // brightening through each second, then dropping back on the tick.
     // Stem and core share one opacity so the dandelion reads as one shape.
-    const pulse = 0.6 + 0.4 * (seconds % 1);
+    const pulse = 0.75 + 0.25 * (seconds % 1);
     const alpha =
       state === 'current' ? pulse : state === 'past' ? CONFIG.alpha.past : CONFIG.alpha.future;
     const solid = `rgba(255,255,255,${alpha})`;
