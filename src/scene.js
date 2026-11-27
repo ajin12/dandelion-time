@@ -235,9 +235,9 @@ export function drawReleasedSeed(ctx, layout, time, t) {
 }
 
 /**
- * Seconds: one bit of fluff enters from the right each second, timed so the
- * whole cloud reaches the left side together as the minute turns over. Then a
- * soft gust carries it off the screen as it fades.
+ * Seconds: one bit of fluff enters from the right each second and drifts
+ * left at its own gentle pace. As the minute turns, a soft gust carries the
+ * whole cloud off as it fades.
  */
 const GUST_SECONDS = 1.6;
 
@@ -246,12 +246,11 @@ function fluffBit(layout, minuteStamp, j, elapsed) {
   const pad = reach * 1.5;
   const top = margin + reach;
   const bottom = Math.max(top + 10, height * layout.fluffBottom);
-  const spawn = j + 1;
-  const progress = Math.min(1, (elapsed - spawn) / (60 - spawn));
-  // Each bit ends the minute somewhere in a loose cloud near the left edge
-  // (rather than all at one x), ready for the gust to carry it off.
-  const endX = margin + width * 0.18 * hash(minuteStamp, j, 6);
-  const fx = width + pad - progress * (width + pad - endX);
+  // Each bit drifts at its own gentle, constant pace. Bits don't have to
+  // cross the sky by :60; the gust at the turn of the minute takes the rest.
+  // (Capped below width/60 so no bit leaves early: the count stays = seconds.)
+  const speed = (width / 60) * rand(0.5, 0.95, minuteStamp, j, 6);
+  const fx = width + pad - (elapsed - (j + 1)) * speed;
   const baseY = top + (bottom - top) * hash(minuteStamp, j, 7);
   const fy = baseY + Math.sin(elapsed * 1.2 + j * 1.3) * reach * 0.3;
   const spin = (hash(minuteStamp, j, 9) - 0.5) * 1.2;
@@ -274,7 +273,7 @@ export function drawFluff(ctx, layout, time) {
   // Last minute's cloud, carried off by a gust and fading out.
   if (t < GUST_SECONDS) {
     const p = t / GUST_SECONDS;
-    const gust = layout.width * 0.45 * p * p;
+    const gust = layout.width * 0.6 * p * p;
     stalks = new Path2D();
     feathers = new Path2D();
     for (let j = 0; j < 59; j++) {
