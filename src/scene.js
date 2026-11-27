@@ -239,7 +239,7 @@ export function drawReleasedSeed(ctx, layout, time, t) {
  * left at its own gentle pace. As the minute turns, a soft gust carries the
  * whole cloud off as it fades.
  */
-const GUST_SECONDS = 1.6;
+const GUST_SECONDS = 3;
 
 function fluffBit(layout, minuteStamp, j, elapsed) {
   const { width, height, margin, reach, featherLen } = layout;
@@ -273,12 +273,12 @@ export function drawFluff(ctx, layout, time) {
   // Last minute's cloud, carried off by a gust and fading out.
   if (t < GUST_SECONDS) {
     const p = t / GUST_SECONDS;
-    const gust = layout.width * 0.6 * p * p;
+    const gust = layout.width * 0.22 * smooth(p);
     stalks = new Path2D();
     feathers = new Path2D();
     for (let j = 0; j < 59; j++) {
       const b = fluffBit(layout, time.minuteStamp - 1, j, 60 + t);
-      addSeed(stalks, feathers, b.fx - gust, b.fy - gust * 0.15, b.angle, 0, b.len, b.featherLen);
+      addSeed(stalks, feathers, b.fx - gust, b.fy - gust * 0.08, b.angle, 0, b.len, b.featherLen);
     }
     strokePaths(ctx, stalks, feathers, 0.95 * (1 - smooth(p)), layout.stroke);
   }
