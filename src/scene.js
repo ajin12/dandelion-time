@@ -235,28 +235,59 @@ export function drawReleasedSeed(ctx, layout, time, t) {
 }
 
 /**
- * Seconds: one bit of fluff enters from the right each second, timed so the
- * whole cloud leaves the left edge together as the minute turns over.
+ * Seconds: one bit of fluff arrives from the right each second and joins a
+ * calm, evenly spaced stream drifting left on a steady breeze. Every bit moves
+ * at the same speed, so by :59 the stream spans the sky; as the minute turns,
+ * a soft gust carries the whole stream off as it fades.
  */
-export function drawFluff(ctx, layout, time) {
-  const { width, height, margin, reach, featherLen } = layout;
-  const t = time.seconds;
-  const count = Math.floor(t);
-  const pad = reach * 1.5;
+const GUST_SECONDS = 1.6;
+
+function addFluffBit(stalks, feathers, layout, minuteStamp, j, x, wallT) {
+  const { margin, reach, height, featherLen } = layout;
   const top = margin + reach;
   const bottom = Math.max(top + 10, height * layout.fluffBottom);
-  const stalks = new Path2D();
-  const feathers = new Path2D();
+  // Golden-ratio spacing spreads the heights evenly with no clumps, plus a
+  // little jitter so it doesn't look gridded.
+  const slot = (j * 0.618034 + hash(minuteStamp, 3)) % 1;
+  const baseY = top + (bottom - top) * (0.08 + 0.84 * slot) + rand(-0.04, 0.04, minuteStamp, j, 7) * (bottom - top);
+  // One shared, slow wave rolls through the stream rather than every bit
+  // bobbing on its own.
+  const y = baseY + Math.sin(wallT * 0.8 - x * 0.006) * reach * 0.18;
+  // Float upright like a real seed (feathers up), rocking gently.
+  const tilt = rand(-0.35, 0.35, minuteStamp, j, 8);
+  const angle = -Math.PI / 2 + tilt + Math.sin(wallT * 0.7 + j * 1.9) * 0.12;
+  // Draw from the achene upwards: shift so the fan sits at (x, y).
+  const len = reach * 0.35;
+  addSeed(stalks, feathers, x - Math.cos(angle) * len, y - Math.sin(angle) * len, angle, 0, len, featherLen);
+}
 
+export function drawFluff(ctx, layout, time) {
+  const { width, margin, reach } = layout;
+  const t = time.seconds;
+  const pad = reach * 1.5;
+  const enterX = width + pad;
+  // Steady breeze: the first bit (arriving at :01) reaches the left margin at :60.
+  const speed = (enterX - margin) / 59;
+  const xAt = (j, elapsed) => enterX - (elapsed - (j + 1)) * speed;
+
+  // This minute's fluff: exactly floor(seconds) bits.
+  const count = Math.floor(t);
+  let stalks = new Path2D();
+  let feathers = new Path2D();
   for (let j = 0; j < count; j++) {
-    const spawn = j + 1;
-    const progress = (t - spawn) / (60 - spawn);
-    const fx = width + pad - progress * (width + 2 * pad);
-    const baseY = top + (bottom - top) * hash(time.minuteStamp, j, 7);
-    const fy = baseY + Math.sin(t * 1.2 + j * 1.3) * reach * 0.3;
-    const spin = (hash(time.minuteStamp, j, 9) - 0.5) * 1.2;
-    const angle = hash(time.minuteStamp, j, 8) * TAU + t * spin;
-    addSeed(stalks, feathers, fx, fy, angle, 0, reach * 0.35, featherLen);
+    addFluffBit(stalks, feathers, layout, time.minuteStamp, j, xAt(j, t), t);
   }
   strokePaths(ctx, stalks, feathers, 0.95, layout.stroke);
+
+  // Last minute's stream, carried off by a gust and fading out.
+  if (t < GUST_SECONDS) {
+    const p = t / GUST_SECONDS;
+    const gust = width * 0.45 * p * p;
+    stalks = new Path2D();
+    feathers = new Path2D();
+    for (let j = 0; j < 59; j++) {
+      addFluffBit(stalks, feathers, layout, time.minuteStamp - 1, j, xAt(j, 60 + t) - gust, 60 + t);
+    }
+    strokePaths(ctx, stalks, feathers, 0.95 * (1 - smooth(p)), layout.stroke);
+  }
 }
