@@ -35,6 +35,14 @@ GitHub Pages, Cloudflare Pages, S3…).
 
 e.g. watch a sunset in fast forward: `/?at=16:00&speed=120&lat=40.7&lon=-74`
 
+## Sound
+
+The **sound off / sound on** button plays calm ambient music that is generated live in the
+browser with the Web Audio API (`src/music.js`): slow pad chords, an occasional chime, and a
+soft bell each time a seed lets go at the top of the minute. There are no audio files to
+license. The choice is remembered; because browsers block autoplay, a saved "on" starts
+playing on the first click or key press.
+
 ## Location and privacy
 
 Sun times are computed entirely in the browser (`src/sun.js`); nothing is sent anywhere.

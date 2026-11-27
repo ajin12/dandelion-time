@@ -6,7 +6,7 @@ import { sunTimes } from './sky.js';
 const fmt = (d) =>
   d ? d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '—';
 
-export function initUi({ getLocation, onRequestLocation }) {
+export function initUi({ getLocation, onRequestLocation, music }) {
   const body = document.body;
   const legend = document.getElementById('legend');
   const legendToggle = document.getElementById('legend-toggle');
@@ -46,6 +46,52 @@ export function initUi({ getLocation, onRequestLocation }) {
   initialFeathers = new URLSearchParams(window.location.search).get('feathers') ?? initialFeathers;
   setFeathers(initialFeathers, false);
   slider.addEventListener('input', () => setFeathers(slider.value, true));
+
+  // Sound toggle. Browsers only allow audio after a user gesture, so a saved
+  // "on" preference starts the music on the first click or key press.
+  const SOUND_KEY = 'dandelion-time:sound';
+  const soundToggle = document.getElementById('sound-toggle');
+  const showSound = (on) => {
+    soundToggle.textContent = on ? 'sound on' : 'sound off';
+    soundToggle.setAttribute('aria-pressed', String(on));
+  };
+  const saveSound = (on) => {
+    try {
+      localStorage.setItem(SOUND_KEY, on ? 'on' : 'off');
+    } catch {
+      /* ignore */
+    }
+  };
+  soundToggle.addEventListener('click', async () => {
+    const on = !music.playing;
+    if (on) {
+      const ok = await music.start();
+      if (!ok) {
+        soundToggle.textContent = 'sound unavailable';
+        return;
+      }
+    } else {
+      music.stop();
+    }
+    showSound(on);
+    saveSound(on);
+  });
+  let soundPref = 'off';
+  try {
+    soundPref = localStorage.getItem(SOUND_KEY) || 'off';
+  } catch {
+    /* ignore */
+  }
+  if (soundPref === 'on') {
+    const resume = (e) => {
+      if (e.target === soundToggle) return; // the toggle handles itself
+      window.removeEventListener('pointerdown', resume);
+      window.removeEventListener('keydown', resume);
+      music.start().then((ok) => ok && showSound(true));
+    };
+    window.addEventListener('pointerdown', resume);
+    window.addEventListener('keydown', resume);
+  }
 
   // Idle fade.
   let idleTimer;

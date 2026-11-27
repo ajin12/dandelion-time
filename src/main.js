@@ -13,6 +13,10 @@ import {
   drawStars,
 } from './scene.js';
 import { initUi } from './ui.js';
+import { AmbientMusic } from './music.js';
+
+const music = new AmbientMusic();
+let lastMinute = -1;
 
 let place = initialLocation();
 let sky = null;
@@ -20,6 +24,7 @@ let skyComputedAt = 0;
 let layout = null;
 
 const ui = initUi({
+  music,
   getLocation: () => place,
   onRequestLocation: async () => {
     const loc = await requestDeviceLocation();
@@ -75,6 +80,12 @@ const sketch = (p) => {
     drawReleasedSeed(ctx, layout, time, t);
     drawFluff(ctx, layout, time);
     ctx.restore();
+
+    // A soft bell as each minute's seed lets go.
+    if (time.minutes !== lastMinute) {
+      if (lastMinute !== -1) music.seedBell();
+      lastMinute = time.minutes;
+    }
 
     ui.tick(date);
   };
