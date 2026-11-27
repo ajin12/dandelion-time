@@ -12,7 +12,7 @@ An abstract clock. A field of twelve dandelions slowly blows away over the cours
 
 ## Running locally
 
-Requires Node 20+ (see `.nvmrc`).
+Requires Node 22.12+ (or 20.19+). With nvm, run `nvm install` in the repo to use the version in `.nvmrc`.
 
 ```bash
 npm install
